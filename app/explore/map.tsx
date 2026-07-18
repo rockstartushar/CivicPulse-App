@@ -1,1 +1,1 @@
-export { default } from '../../apps/mobile/app/explore/map.native';
+export { default } from '../../apps/mobile/app/explore/map';

@@ -8,19 +8,26 @@
   "scripts": {
     "api:dev": "npm run start:dev --workspace=@civicpulse/api",
     "api:build": "npm run build --workspace=@civicpulse/api",
-    "mobile:start": "npx expo start --clear",
-    "mobile:web": "npx expo start --web --clear",
+    "mobile:start": "npx expo start --clear --offline",
+    "mobile:web": "npx expo start --web --clear --offline",
     "db:generate": "npm run prisma:generate --workspace=@civicpulse/api",
     "db:migrate": "npm run prisma:migrate --workspace=@civicpulse/api",
     "db:seed": "npm run prisma:seed --workspace=@civicpulse/api"
   },
   "dependencies": {
-    "expo-router": "57.0.7",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "expo": "^54.0.0",
+    "expo-constants": "~18.0.13",
+    "expo-linking": "~8.0.12",
+    "expo-router": "~6.0.24",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
-    "@expo/ngrok": "^4.1.0"
+    "@expo/ngrok": "^4.1.0",
+    "@types/react": "^19.2.17"
   }
 }
