@@ -1,0 +1,11 @@
+import { useLocalSearchParams } from 'expo-router';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { wardById } from '@/src/data/jhotwara';
+
+export default function WardDetail() {
+  const { id } = useLocalSearchParams<{ id: string }>(); const ward = wardById(id);
+  if (!ward) return <View style={styles.container}><Text>Ward not found.</Text></View>;
+  return <ScrollView contentContainerStyle={styles.container}><Text style={styles.eyebrow}>JHOTWARA CIVIC EXPLORER</Text><Text style={styles.title}>Ward {ward.number}</Text><Section title="Ward boundary"><Text style={styles.copy}>{ward.boundaryStatus}</Text></Section><Section title="Parshad / councillor"><Text style={styles.copy}>{ward.councillorStatus}</Text></Section><Section title="Tenders and construction"><Text style={styles.copy}>These records are currently scoped to Jhotwara Zone. They are not assigned to this ward until an official road/locality or boundary match is reviewed.</Text>{ward.tenders.map((tender) => <View key={tender.id} style={styles.card}><Text style={styles.cardTitle}>{tender.title}</Text><Text style={styles.meta}>{tender.authority} · {tender.scope}</Text><Text style={styles.status}>{tender.status}</Text><Text style={styles.meta}>Checked: {tender.sourceCheckedAt}</Text><Pressable onPress={() => void Linking.openURL(tender.sourceUrl)}><Text style={styles.link}>Open official source</Text></Pressable></View>)}</Section></ScrollView>;
+}
+function Section({ title, children }: { title: string; children: React.ReactNode }) { return <View style={styles.section}><Text style={styles.sectionTitle}>{title}</Text>{children}</View>; }
+const styles=StyleSheet.create({container:{padding:20,gap:16},eyebrow:{color:'#0b6e69',fontWeight:'800',letterSpacing:1},title:{fontSize:31,fontWeight:'800',color:'#073b4c'},section:{gap:8},sectionTitle:{fontSize:19,fontWeight:'800',color:'#073b4c'},copy:{color:'#405258',lineHeight:21},card:{backgroundColor:'#fff',borderRadius:12,padding:14,gap:6,borderWidth:1,borderColor:'#d8e1e2'},cardTitle:{fontSize:16,fontWeight:'800',color:'#073b4c'},meta:{fontSize:12,color:'#52616b'},status:{fontSize:13,fontWeight:'700',color:'#0b6e69'},link:{color:'#0b6e69',fontWeight:'800',marginTop:4}});

@@ -1,0 +1,26 @@
+{
+  "name": "civicpulse",
+  "private": true,
+  "main": "expo-router/entry",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "api:dev": "npm run start:dev --workspace=@civicpulse/api",
+    "api:build": "npm run build --workspace=@civicpulse/api",
+    "mobile:start": "npx expo start --clear",
+    "mobile:web": "npx expo start --web --clear",
+    "db:generate": "npm run prisma:generate --workspace=@civicpulse/api",
+    "db:migrate": "npm run prisma:migrate --workspace=@civicpulse/api",
+    "db:seed": "npm run prisma:seed --workspace=@civicpulse/api"
+  },
+  "dependencies": {
+    "expo-router": "57.0.7",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@expo/ngrok": "^4.1.0"
+  }
+}

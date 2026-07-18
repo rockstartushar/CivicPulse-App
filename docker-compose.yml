@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: civicpulse
+      POSTGRES_PASSWORD: civicpulse
+      POSTGRES_DB: civicpulse
+    ports:
+      # Host port 5432 is already in use on this machine.
+      - "5433:5432"
+    volumes:
+      - civicpulse-postgres:/var/lib/postgresql/data
+volumes:
+  civicpulse-postgres:

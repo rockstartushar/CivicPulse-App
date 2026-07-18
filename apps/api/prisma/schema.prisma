@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CITIZEN
+  SUPER_ADMIN
+}
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+enum ModerationState {
+  PENDING
+  PUBLISHED
+  HIDDEN
+  REMOVED
+}
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  ACKNOWLEDGED
+  WORK_STARTED
+  RESOLVED
+  VERIFIED
+  CLOSED
+  REOPENED
+}
+enum LocationSource {
+  GPS
+  MANUAL
+}
+enum ActivityType {
+  CREATED
+  FIELD_CHANGED
+  STATUS_CHANGED
+  VISIBILITY_CHANGED
+  MODERATION_CHANGED
+  ROUTING_SNAPSHOTTED
+  MEDIA_ADDED
+}
+
+model User {
+  id String @id @default(uuid())
+  firebaseUid String @unique
+  role UserRole @default(CITIZEN)
+  locale String @default("en-IN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reports Report[]
+  activities ReportActivity[] @relation("ActivityActor")
+}
+model GeographyScope {
+  id String @id @default(uuid())
+  country String @default("India")
+  state String?
+  city String?
+  constituency String?
+  locality String?
+  isLaunchArea Boolean @default(false)
+  routingRules RoutingRule[]
+  @@index([country, state, city, constituency])
+}
+model Category {
+  id String @id @default(uuid())
+  slug String @unique
+  name String
+  formRules Json
+  active Boolean @default(true)
+  sortOrder Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reports Report[]
+  routingRules RoutingRule[]
+}
+model Department {
+  id String @id @default(uuid())
+  name String @unique
+  channels OfficialChannel[]
+  routingRules RoutingRule[]
+}
+model OfficialChannel {
+  id String @id @default(uuid())
+  departmentId String
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  label String
+  instructions String
+  url String?
+  phone String?
+  lastVerifiedAt DateTime
+  active Boolean @default(true)
+}
+model RoutingRule {
+  id String @id @default(uuid())
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  departmentId String
+  department Department @relation(fields: [departmentId], references: [id])
+  geographyScopeId String?
+  geographyScope GeographyScope? @relation(fields: [geographyScopeId], references: [id])
+  confidence Int
+  explanation String
+  priority Int @default(0)
+  active Boolean @default(true)
+}
+model Report {
+  id String @id @default(uuid())
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id])
+  description String
+  manualLocation String?
+  latitude Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+  publicLatitude Decimal? @db.Decimal(9, 4)
+  publicLongitude Decimal? @db.Decimal(9, 4)
+  locationSource LocationSource?
+  visibility Visibility @default(PUBLIC)
+  moderationState ModerationState @default(PENDING)
+  status ReportStatus @default(DRAFT)
+  complaintReference String?
+  routingSnapshot Json?
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  media ReportMedia[]
+  activities ReportActivity[]
+  @@index([ownerId, updatedAt])
+  @@index([visibility, moderationState, publicLatitude, publicLongitude])
+}
+model ReportMedia {
+  id String @id @default(uuid())
+  reportId String
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  cloudinaryPublicId String @unique
+  secureUrl String
+  contentType String
+  createdAt DateTime @default(now())
+}
+model ReportActivity {
+  id String @id @default(uuid())
+  reportId String
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  actorId String?
+  actor User? @relation("ActivityActor", fields: [actorId], references: [id])
+  type ActivityType
+  payload Json?
+  createdAt DateTime @default(now())
+  @@index([reportId, createdAt])
+}
+model OfflineSyncReceipt {
+  id String @id @default(uuid())
+  userId String
+  idempotencyKey String
+  reportId String
+  createdAt DateTime @default(now())
+  @@unique([userId, idempotencyKey])
+}

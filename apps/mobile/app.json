@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "CivicPulse",
+    "slug": "civicpulse",
+    "scheme": "civicpulse",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow CivicPulse to take an issue photo for a civic report."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow CivicPulse to use your location for an issue report."
+        }
+      ],
+      "expo-secure-store",
+      "expo-sqlite"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "com.civicpulse.app"
+    }
+  }
+}
